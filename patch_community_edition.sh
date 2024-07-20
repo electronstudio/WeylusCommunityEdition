@@ -20,3 +20,10 @@ git merge Diordany/pr-func-proto -m "merged Diordany"
 git remote add lyonbot https://github.com/lyonbot/Weylus.git
 git fetch lyonbot pr
 git merge lyonbot/pr -m "merged lyonbot"
+
+git remote add electronstudio2 https://github.com/electronstudio2/Weylus.git
+git fetch electronstudio2 build-fixes
+git merge electronstudio2/build-fixes -m "merged build-fixes"
+
+git fetch electronstudio2 community-edition-patches
+git merge electronstudio2/community-edition-patches -m "merged community-edition-patches"
