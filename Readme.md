@@ -1,4 +1,15 @@
 # Weylus
+
+## Community Edition adds these patches
+
+* Commits from Weylus master that improve Wayland compabability.
+* [bunch of improvements: MacOS Stylus, Virtual Key, Reconnect, etc.](https://github.com/H-M-H/Weylus/pull/276)
+* [Modify write_video_packet prototype](https://github.com/H-M-H/Weylus/pull/273)
+* [Always render square QR code so it can be read](https://github.com/H-M-H/Weylus/pull/236)
+* [fix scroll direction problems in uinput](https://github.com/H-M-H/Weylus/pull/215)
+* [Use WinAPI to simulate pointermovements](https://github.com/H-M-H/Weylus/pull/128)
+* [Linux build fixes](https://github.com/electronstudio2/Weylus/tree/build-fixes)
+
 ![Build](https://github.com/H-M-H/Weylus/workflows/Build/badge.svg)
 
 Weylus turns your tablet or smart phone into a graphic tablet/touch screen for your computer!
