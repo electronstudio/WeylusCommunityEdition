@@ -2257,7 +2257,7 @@ dependencies = [
 
 [[package]]
 name = "weylus"
-version = "0.11.4"
+version = "2024.7.29"
 dependencies = [
  "autopilot",
  "bitflags",

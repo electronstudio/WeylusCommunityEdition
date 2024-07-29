@@ -1,4 +1,10 @@
-# Weylus
+# Weylus Community Edition
+
+## Note for MacOS
+
+After unzipping, run:
+
+    sudo xattr -dr com.apple.quarantine ~/Downloads/Weylus.app
 
 ## Community Edition adds these patches
 
@@ -9,6 +15,8 @@
 * [fix scroll direction problems in uinput](https://github.com/H-M-H/Weylus/pull/215)
 * [Use WinAPI to simulate pointermovements](https://github.com/H-M-H/Weylus/pull/128)
 * [Linux build fixes](https://github.com/electronstudio2/Weylus/tree/build-fixes)
+
+
 
 ![Build](https://github.com/H-M-H/Weylus/workflows/Build/badge.svg)
 
