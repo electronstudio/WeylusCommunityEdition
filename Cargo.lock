@@ -67,7 +67,8 @@ checksum = "0c4b4d0bd25bd0b74681c0ad21497610ce1b7c91b1022cd21c80c6fbdd9476b0"
 [[package]]
 name = "autopilot"
 version = "0.4.0"
-source = "git+https://github.com/lyonbot/autopilot-rs.git?rev=a92b41edb4818d0d4b4289d49e65420dbe9ab081#a92b41edb4818d0d4b4289d49e65420dbe9ab081"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "3a2fd0359d0cd30b15419bcce7e6641a3cbe2046c612b3900216dc64bc989558"
 dependencies = [
  "cocoa",
  "core-foundation 0.7.0",
