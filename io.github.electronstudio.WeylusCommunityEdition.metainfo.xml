@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <component type="desktop-application">
-    <id>io.github.electronstudio.weylus_community_edition</id>
+    <id>io.github.electronstudio.WeylusCommunityEdition</id>
 
     <name>Weylus Community Edition</name>
     <summary>Use your tablet as graphic tablet/touch screen on your computer</summary>
@@ -32,7 +32,7 @@
     </description>
     <url type="homepage">https://github.com/electronstudio/WeylusCommunityEdition</url>
     <content_rating type="oars-1.1" />
-    <launchable type="desktop-id">io.github.electronstudio.weylus_community_edition.desktop</launchable>
+    <launchable type="desktop-id">io.github.electronstudio.WeylusCommunityEdition.desktop</launchable>
     <developer id="io.github.electronstudio">
         <name>H-M-H</name>
     </developer>
