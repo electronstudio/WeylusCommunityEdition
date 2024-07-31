@@ -30,14 +30,27 @@
                 <p>Tablet as second screen</p>
 
     </description>
+    <screenshots>
+        <screenshot type="default">
+            <image xml:lang="en">https://example.org/example1.png</image>
+            <caption>The one and only window</caption>
+        </screenshot>
+    </screenshots>
+
     <url type="homepage">https://github.com/electronstudio/WeylusCommunityEdition</url>
+
     <content_rating type="oars-1.1" />
+
     <launchable type="desktop-id">io.github.electronstudio.WeylusCommunityEdition.desktop</launchable>
     <developer id="io.github.electronstudio">
         <name>H-M-H</name>
     </developer>
+
     <releases>
         <release version="2024.7.31" date="2024-7-31">
+            <description>
+                <p>Support for flatpak build</p>
+            </description>
         </release>
     </releases>
 </component>
