@@ -32,7 +32,7 @@
     </description>
     <screenshots>
         <screenshot type="default">
-            <image xml:lang="en">https://example.org/example1.png</image>
+            <image xml:lang="en">https://raw.githubusercontent.com/electronstudio2/Weylus/community-edition-patches/screenshot.png</image>
             <caption>The one and only window</caption>
         </screenshot>
     </screenshots>
@@ -47,7 +47,7 @@
     </developer>
 
     <releases>
-        <release version="2024.7.31" date="2024-7-31">
+        <release version="2024.8.1" date="2024-8-1">
             <description>
                 <p>Support for flatpak build</p>
             </description>
