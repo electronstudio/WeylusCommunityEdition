@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+    <id>io.github.electronstudio.WeylusCommunityEdition</id>
+
+    <name>Weylus Community Edition</name>
+    <summary>Use your tablet as graphic tablet/touch screen on your computer</summary>
+
+    <metadata_license>CC0-1.0</metadata_license>
+    <project_license>AGPL-3.0-or-later</project_license>
+
+    <supports>
+        <control>pointing</control>
+        <control>keyboard</control>
+        <control>touch</control>
+        <control>tablet</control>
+    </supports>
+
+    <description>
+        <p>
+            Weylus turns your tablet or smart phone into a graphic tablet/touch screen for your computer!
+        </p>
+        <p>Control your mouse with your tablet</p>
+                <p>Mirror your screen to your tablet</p>
+                <p>Send keyboard input using physical keyboards</p>
+                <p>Hardware accelerated video encoding</p>
+                <p>Support for a stylus/pen (supports pressure and tilt)</p>
+                <p>Multi-touch: Try it with software that supports multi-touch, like Krita, and see for yourself!</p>
+                <p>Capturing specific windows and only drawing to them</p>
+                <p>Faster screen mirroring</p>
+                <p>Tablet as second screen</p>
+
+    </description>
+    <screenshots>
+        <screenshot type="default">
+            <image>https://raw.githubusercontent.com/electronstudio2/Weylus/community-edition-patches/screenshot.png</image>
+            <caption>The one and only window</caption>
+        </screenshot>
+    </screenshots>
+
+    <url type="homepage">https://github.com/electronstudio/WeylusCommunityEdition</url>
+
+    <content_rating type="oars-1.1" />
+
+    <launchable type="desktop-id">io.github.electronstudio.WeylusCommunityEdition.desktop</launchable>
+    <developer id="io.github.electronstudio">
+        <name>H-M-H</name>
+    </developer>
+
+    <releases>
+        <release version="2024.8.1" date="2024-8-1">
+            <description>
+                <p>Support for flatpak build</p>
+            </description>
+        </release>
+    </releases>
+</component>
