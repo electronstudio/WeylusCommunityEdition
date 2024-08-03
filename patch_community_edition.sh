@@ -19,10 +19,10 @@ git remote add scribblemaniac https://github.com/scribblemaniac/Weylus.git
 git fetch scribblemaniac fix-qr-code
 git merge scribblemaniac/fix-qr-code -m "merged scribblemaniac"
 
-# This one no longer seems necessary?  Breaks mac build with vendored ffmpeg.
-#git remote add Diordany https://github.com/Diordany/Weylus.git
-#git fetch Diordany pr-func-proto
-#git merge Diordany/pr-func-proto -m "merged Diordany"
+# This one no longer seems necessary?  Breaks mac build with vendored ffmpeg?
+git remote add Diordany https://github.com/Diordany/Weylus.git
+git fetch Diordany pr-func-proto
+git merge Diordany/pr-func-proto -m "merged Diordany"
 
 
 # This needs a fix for windows currently
