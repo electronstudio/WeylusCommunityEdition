@@ -47,9 +47,14 @@
     </developer>
 
     <releases>
+        <release version="2024.8.3" date="2024-8-3">
+            <description>
+                <p>Increase bundled ffmpeg to 7.0 so it will build on macos.</p>
+            </description>
+        </release>
         <release version="2024.8.1" date="2024-8-1">
             <description>
-                <p>Support for flatpak build</p>
+                <p>Support for flatpak build.</p>
             </description>
         </release>
     </releases>
