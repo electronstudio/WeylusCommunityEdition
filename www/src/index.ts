@@ -1,3 +1,5 @@
+import { initVirtualKey, setVirtualKeysProfiles } from "./virtualKey";
+
 enum LogLevel {
     ERROR = 0,
     WARN,
@@ -15,6 +17,10 @@ let frame_count = 0;
 let last_fps_calc: number = performance.now();
 
 let check_video: HTMLInputElement;
+let webSocket: WebSocket;
+
+export const getWebSocket = () => webSocket;
+export const sendWsMessage = (msg: object) => webSocket.send(JSON.stringify(msg));
 
 function run(access_code: string, websocket_port: number, level: string) {
     window.onload = () => {
@@ -93,12 +99,11 @@ function toggle_energysaving(energysaving: boolean) {
             settings.checks.get("enable_video").dispatchEvent(new Event("change"));
         } else
             settings.checks.get("enable_video").disabled = false;
-        new PointerHandler(settings.webSocket);
+        new PointerHandler();
     }
 }
 
 class Settings {
-    webSocket: WebSocket;
     checks: Map<string, HTMLInputElement>;
     capturable_select: HTMLSelectElement;
     frame_update_limit_input: HTMLInputElement;
@@ -111,8 +116,7 @@ class Settings {
     visible: boolean;
     settings: HTMLElement;
 
-    constructor(webSocket: WebSocket) {
-        this.webSocket = webSocket;
+    constructor() {
         this.checks = new Map<string, HTMLInputElement>();
         this.capturable_select = document.getElementById("window") as HTMLSelectElement;
         this.frame_update_limit_input = document.getElementById("frame_update_limit") as HTMLInputElement;
@@ -178,7 +182,7 @@ class Settings {
 
         let upd_pointer = () => {
             this.save_settings();
-            new PointerHandler(this.webSocket);
+            new PointerHandler();
         }
         this.checks.get("enable_mouse").onchange = upd_pointer;
         this.checks.get("enable_stylus").onchange = upd_pointer;
@@ -199,7 +203,7 @@ class Settings {
         this.scale_video_input.onchange = upd_server_config;
         this.client_name_input.onchange = upd_server_config;
 
-        document.getElementById("refresh").onclick = () => this.webSocket.send('"GetCapturableList"');
+        document.getElementById("refresh").onclick = () => webSocket.send('"GetCapturableList"');
         this.capturable_select.onchange = () => this.send_server_config();
     }
 
@@ -215,7 +219,7 @@ class Settings {
         config["max_height"] = h;
         if (this.client_name_input.value)
             config["client_name"] = this.client_name_input.value;
-        this.webSocket.send(JSON.stringify({ "Config": config }));
+        webSocket.send(JSON.stringify({ "Config": config }));
     }
 
     save_settings() {
@@ -277,6 +281,10 @@ class Settings {
                 toggle_energysaving(true);
             }
 
+            if (!this.checks.get("enable_virtual_keys").checked) {
+                document.getElementById("vk-container").classList.add("hidden");
+            }
+
             let client_name = settings["client_name"];
             if (client_name)
                 this.client_name_input.value = client_name;
@@ -331,6 +339,8 @@ class Settings {
             // Can't find the window, so don't select anything
             this.capturable_select.value = "";
     }
+
+
 }
 
 let settings: Settings;
@@ -596,15 +606,15 @@ class Painter {
 }
 
 class PointerHandler {
-    webSocket: WebSocket;
     pointerTypes: string[];
 
-    constructor(webSocket: WebSocket) {
+    constructor() {
         let video = document.getElementById("video");
         let canvas = document.getElementById("canvas");
-        this.webSocket = webSocket;
         this.pointerTypes = settings.pointer_types();
 
+        video.onpointerenter = (e) => this.onEvent(e, "pointerenter");
+        video.onpointerleave = (e) => this.onEvent(e, "pointerleave");
         video.onpointerdown = (e) => this.onEvent(e, "pointerdown");
         video.onpointerup = (e) => this.onEvent(e, "pointerup");
         video.onpointercancel = (e) => this.onEvent(e, "pointercancel");
@@ -615,11 +625,15 @@ class PointerHandler {
             painter = new Painter(canvas as HTMLCanvasElement);
 
         if (painter && painter.initialized) {
+            canvas.onpointerenter = (e) => this.onEvent(e, "pointerenter");
+            canvas.onpointerleave = (e) => this.onEvent(e, "pointerleave");
             canvas.onpointerdown = (e) => { this.onEvent(e, "pointerdown"); painter.onstart(e); };
             canvas.onpointerup = (e) => { this.onEvent(e, "pointerup"); painter.onstop(e); };
             canvas.onpointercancel = (e) => { this.onEvent(e, "pointercancel"); painter.onstop(e); };
             canvas.onpointermove = (e) => { this.onEvent(e, "pointermove"); painter.onmove(e); };
         } else {
+            canvas.onpointerenter = (e) => this.onEvent(e, "pointerenter");
+            canvas.onpointerleave = (e) => this.onEvent(e, "pointerleave");
             canvas.onpointerdown = (e) => this.onEvent(e, "pointerdown");
             canvas.onpointerup = (e) => this.onEvent(e, "pointerup");
             canvas.onpointercancel = (e) => this.onEvent(e, "pointercancel");
@@ -634,14 +648,14 @@ class PointerHandler {
 
         for (let elem of [video, canvas]) {
             elem.onwheel = (e) => {
-                this.webSocket.send(JSON.stringify({ "WheelEvent": new WEvent(e) }));
+                webSocket.send(JSON.stringify({ "WheelEvent": new WEvent(e) }));
             }
         }
     }
 
     onEvent(event: PointerEvent, event_type: string) {
         if (this.pointerTypes.includes(event.pointerType)) {
-            this.webSocket.send(
+            webSocket.send(
                 JSON.stringify(
                     {
                         "PointerEvent": new PEvent(
@@ -659,7 +673,7 @@ class PointerHandler {
     }
 }
 
-class KEvent {
+export class KEvent {
     event_type: string;
     code: string;
     key: string;
@@ -682,11 +696,7 @@ class KEvent {
 }
 
 class KeyboardHandler {
-    webSocket: WebSocket;
-
-    constructor(webSocket: WebSocket) {
-        this.webSocket = webSocket;
-
+    constructor() {
         let m = document.getElementById("main");
 
         m.onkeydown = (e) => {
@@ -703,14 +713,14 @@ class KeyboardHandler {
     }
 
     onEvent(event: KeyboardEvent, event_type: string) {
-        this.webSocket.send(JSON.stringify({ "KeyboardEvent": new KEvent(event_type, event) }));
+        webSocket.send(JSON.stringify({ "KeyboardEvent": new KEvent(event_type, event) }));
         event.preventDefault();
         event.stopPropagation();
         return false;
     }
 }
 
-function frame_timer(webSocket: WebSocket) {
+function frame_timer() {
     // Closing or closed, so no more frames
     if (webSocket.readyState > webSocket.OPEN)
         return;
@@ -724,13 +734,13 @@ function frame_timer(webSocket: WebSocket) {
     }
 
     if (document.hidden) {
-        requestAnimationFrame(() => frame_timer(webSocket));
+        requestAnimationFrame(() => frame_timer());
         return;
     }
 
     if (webSocket.readyState === webSocket.OPEN && check_video.checked)
         webSocket.send('"TryGetFrame"');
-    setTimeout(() => frame_timer(webSocket), settings.frame_update_limit());
+    setTimeout(() => frame_timer(), settings.frame_update_limit());
 }
 
 function handle_messages(
@@ -798,6 +808,10 @@ function handle_messages(
                 else if ("ConfigError" in msg) {
                     onConfigError(msg["ConfigError"]);
                 }
+                else if ("VirtualKeysProfiles" in msg) {
+                    const profiles = JSON.parse(msg["VirtualKeysProfiles"] || '[]');
+                    setVirtualKeysProfiles(profiles);
+                }
             }
 
             return;
@@ -839,21 +853,84 @@ function check_apis() {
 function init(access_code: string, websocket_port: number) {
     check_apis();
 
-    let authed = false;
-    let protocol = document.location.protocol == "https:" ? "wss://" : "ws://";
-    let webSocket = new WebSocket(protocol + window.location.hostname + ":" + websocket_port);
-    webSocket.binaryType = "arraybuffer";
+    const disconnectedNotice = document.getElementById("disconnected-notice") as HTMLDivElement;
+    const connectingNotice = document.getElementById("connecting-notice") as HTMLDivElement;
 
-    settings = new Settings(webSocket);
+    const video = document.getElementById("video") as HTMLVideoElement;
+    const canvas = document.getElementById("canvas") as HTMLCanvasElement;
 
-    let video = document.getElementById("video") as HTMLVideoElement;
-    let canvas = document.getElementById("canvas") as HTMLCanvasElement;
+    let is_connected = false;
 
-    video.oncontextmenu = function(event) {
+    /** update global `webSocket` and start connecting */
+    const makeConnection = () => {
+        is_connected = false;
+        if (webSocket) webSocket.close();
+
+        connectingNotice.classList.remove("hidden");
+        disconnectedNotice.classList.add("hidden");
+
+        const protocol = document.location.protocol == "https:" ? "wss://" : "ws://";
+        const ws = webSocket = new WebSocket(protocol + window.location.hostname + ":" + websocket_port);
+
+        ws.binaryType = "arraybuffer";
+        ws.onopen = function () {
+            if (webSocket !== ws) return;
+            if (access_code) ws.send(access_code);
+            is_connected = true;
+
+            ws.send('"GetCapturableList"');
+            ws.send('"RequestVirtualKeysProfiles"');
+            settings.send_server_config();
+
+            disconnectedNotice.classList.add("hidden");
+            connectingNotice.classList.add("hidden");
+        }
+
+        let disconnected = false;
+        let handle_disconnect = (msg: string) => {
+            if (webSocket !== ws) return;  // a outdated connection
+            if (disconnected) return;
+
+            is_connected = false;
+            disconnected = true;
+            disconnectedNotice.classList.remove("hidden");
+            connectingNotice.classList.add("hidden");
+            disconnectedNotice.querySelector("h2").textContent = msg;
+
+            function handleGlobalClick(e: MouseEvent) {
+                e.stopPropagation();
+                e.preventDefault();
+                document.body.removeEventListener("click", handleGlobalClick, true);
+                makeConnection()
+            }
+            document.body.addEventListener("click", handleGlobalClick, true);
+        }
+        ws.onerror = () => handle_disconnect("Lost connection.");
+        ws.onclose = () => handle_disconnect("Connection closed.");
+
+        let config_ok_received = false;
+        handle_messages(webSocket, video, () => {
+            if (!config_ok_received) {
+                new KeyboardHandler();
+                new PointerHandler();
+                frame_timer();
+                config_ok_received = true;
+            }
+        },
+            (err) => alert(err),
+            (window_names) => settings.onCapturableList(window_names)
+        );
+    }
+    makeConnection();
+
+    settings = new Settings();
+    initVirtualKey();
+
+    document.body.addEventListener("contextmenu", (event) => {
         event.preventDefault();
         event.stopPropagation();
         return false;
-    };
+    }, true);
 
     let toggle_fullscreen_btn = document.getElementById("fullscreen") as HTMLButtonElement;
 
@@ -871,46 +948,17 @@ function init(access_code: string, websocket_port: number) {
         toggle_fullscreen_btn.parentElement.removeChild(toggle_fullscreen_btn);
     }
 
-    let handle_disconnect = (msg: string) => {
-        document.body.onclick = video.onclick = (e) => {
-            e.stopPropagation();
-            if (window.confirm(msg + " Reload page?"))
-                location.reload();
-        }
-    }
-    webSocket.onerror = () => handle_disconnect("Lost connection.");
-    webSocket.onclose = () => handle_disconnect("Connection closed.");
     window.onresize = () => {
         stretch_video();
         canvas.width = window.innerWidth * window.devicePixelRatio;
         canvas.height = window.innerHeight * window.devicePixelRatio;
         let [w, h] = calc_max_video_resolution(settings.scale_video_input.valueAsNumber);
         settings.scale_video_output.value = w + "x" + h;
-        if (authed)
+        if (is_connected)
             settings.send_server_config();
     }
     video.controls = false;
     video.onloadeddata = () => stretch_video();
-    let is_connected = false;
-    handle_messages(webSocket, video, () => {
-        if (!is_connected) {
-            new KeyboardHandler(webSocket);
-            new PointerHandler(webSocket);
-            frame_timer(webSocket);
-            is_connected = true;
-        }
-    },
-        (err) => alert(err),
-        (window_names) => settings.onCapturableList(window_names)
-    );
-    window.onunload = () => { webSocket.close(); }
-    webSocket.onopen = function(event) {
-        if (access_code)
-            webSocket.send(access_code);
-        authed = true;
-        webSocket.send('"GetCapturableList"');
-        settings.send_server_config();
-    }
 }
 
 // object-fit: fill; <-- this is unfortunately not supported on iOS, so we use the following
@@ -924,3 +972,6 @@ function stretch_video() {
         video.style.transform = "scale(" + scale + ")";
     }
 }
+
+// @ts-ignore
+window.run = run;
