@@ -19,20 +19,15 @@ git remote add scribblemaniac https://github.com/scribblemaniac/Weylus.git
 git fetch scribblemaniac fix-qr-code
 git merge scribblemaniac/fix-qr-code -m "merged scribblemaniac"
 
-# This one no longer seems necessary?  Breaks mac build with vendored ffmpeg?
 git remote add Diordany https://github.com/Diordany/Weylus.git
 git fetch Diordany pr-func-proto
 git merge Diordany/pr-func-proto -m "merged Diordany"
 
 
-# This needs a fix for windows currently
-#git remote add lyonbot https://github.com/lyonbot/Weylus.git
-#git fetch lyonbot pr
-#git merge lyonbot/pr -m "merged lyonbot"
-# The fixed version
-git remote add lyonbot https://github.com/electronstudio2/WeylusLyonbotWindowsFixes.git
+git remote add lyonbot https://github.com/lyonbot/Weylus.git
 git fetch lyonbot pr
 git merge lyonbot/pr -m "merged lyonbot"
+
 
 git remote add electronstudio2 https://github.com/electronstudio2/Weylus.git
 git fetch electronstudio2 build-fixes
