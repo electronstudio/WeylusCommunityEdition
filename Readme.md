@@ -1,4 +1,28 @@
-# Weylus
+# Weylus Community Edition
+
+## Flatpak now available
+
+https://flathub.org/apps/io.github.electronstudio.WeylusCommunityEdition
+
+## Note for MacOS
+
+After unzipping, run:
+
+    sudo xattr -dr com.apple.quarantine ~/Downloads/Weylus.app
+
+## Community Edition adds these patches
+
+* Commits from Weylus master that improve Wayland compatibility.
+* [bunch of improvements: MacOS Stylus, Virtual Key, Reconnect, etc.](https://github.com/H-M-H/Weylus/pull/276)
+* [Always render square QR code so it can be read](https://github.com/H-M-H/Weylus/pull/236)
+* [fix scroll direction problems in uinput](https://github.com/H-M-H/Weylus/pull/215)
+* [Use WinAPI to simulate pointermovements](https://github.com/H-M-H/Weylus/pull/128)
+* [Modify write_video_packet prototype](https://github.com/H-M-H/Weylus/pull/273)
+* [Linux build fixes](https://github.com/electronstudio2/Weylus/tree/build-fixes)
+* [Create helper window in main thread](https://github.com/H-M-H/Weylus/pull/282)
+
+
+
 ![Build](https://github.com/H-M-H/Weylus/workflows/Build/badge.svg)
 
 Weylus turns your tablet or smart phone into a graphic tablet/touch screen for your computer!
@@ -50,15 +74,14 @@ features on Linux are:
 
 ## Installation
 Just grab the latest release for your OS from the
-[releases page](https://github.com/H-M-H/Weylus/releases) and install it on your computer. No apps
+[releases page](https://github.com/electronstudio/WeylusCommunityEdition/releases) and install it on your computer. No apps
 except a modern browser (Firefox 80+, iOS/iPadOS 13+) are required on your tablet. **If you run
 Linux make sure to follow the instructions described [here](#linux) to enable uinput for features
 like pressure sensitivity and multitouch!**
 
 ### Packages
-AUR packages for Weylus are available here:
-- From source: [weylus](https://aur.archlinux.org/packages/weylus/)
-- Prebuilt binary: [weylus-bin](https://aur.archlinux.org/packages/weylus-bin/)
+
+https://flathub.org/apps/io.github.electronstudio.WeylusCommunityEdition
 
 ## Running
 Start Weylus, preferably set an access code in the access code box and press the Start button. This
