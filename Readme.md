@@ -19,6 +19,7 @@ After unzipping, run:
 * [Use WinAPI to simulate pointermovements](https://github.com/H-M-H/Weylus/pull/128)
 * [Modify write_video_packet prototype](https://github.com/H-M-H/Weylus/pull/273)
 * [Linux build fixes](https://github.com/electronstudio2/Weylus/tree/build-fixes)
+* [Create helper window in main thread](https://github.com/H-M-H/Weylus/pull/282)
 
 
 

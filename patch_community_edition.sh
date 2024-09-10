@@ -23,11 +23,13 @@ git remote add Diordany https://github.com/Diordany/Weylus.git
 git fetch Diordany pr-func-proto
 git merge Diordany/pr-func-proto -m "merged Diordany"
 
-
 git remote add lyonbot https://github.com/lyonbot/Weylus.git
 git fetch lyonbot pr
 git merge lyonbot/pr -m "merged lyonbot"
 
+git remote add michaelcadilhac https://github.com/michaelcadilhac/Weylus.git
+git fetch michaelcadilhac master
+git merge michaelcadilhac/master -m "merged michaelcadilhac"
 
 git remote add electronstudio2 https://github.com/electronstudio2/Weylus.git
 git fetch electronstudio2 build-fixes
