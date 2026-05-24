@@ -439,3 +439,27 @@ are connected via the Internet Protocol and that doesn't necessarily imply WiFi.
 [![Packaging status](
 https://repology.org/badge/vertical-allrepos/weylus.svg
 )](https://repology.org/project/weylus/versions)
+
+
+### Native binary crash on Ubuntu 24.04 / Mint 22:
+
+If the pre-compiled binary crashes on launch with an 
+`undefined symbol: vaMapBuffer2 error`, 
+it is due to a library mismatch between the release binary (compiled against libva 2.21+) and the system's current version (libva 2.20.0).
+
+You can resolve this by building a local version of libva:
+```
+# 1. Install dependencies
+sudo apt install ffmpeg libavcodec-dev libavformat-dev libva-dev libx264-dev pipewire xdg-desktop-portal-gtk meson ninja-build libdrm-dev pkg-config
+
+# 2. Build libva locally
+git clone https://github.com/intel/libva.git
+cd libva
+meson setup build
+ninja -C build
+
+# 3. Move the libraries next to the executable and run
+cp build/va/libva.so.2* ../
+cd ../
+LD_LIBRARY_PATH= ./weylus
+```
