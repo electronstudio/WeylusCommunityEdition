@@ -1,3 +1,5 @@
+**Please checkout my new project [Inara](https://github.com/electronstudio/desktop_remote_mobile_companion) - it does some of the same things Weylus does!**
+
 # Weylus Community Edition
 
 ## New: Discord
