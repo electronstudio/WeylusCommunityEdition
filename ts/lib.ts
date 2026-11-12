@@ -729,11 +729,128 @@ class PointerHandler {
             canvas.onpointerover = (e) => this.onEvent(e, "pointerover");
         }
 
+        // Compatibility for browsers that support Touch Events but not Pointer Events.
+        if (!("PointerEvent" in window) && "TouchEvent" in window) {
+            const activeTouches = new Map<number, boolean>();
+            let primaryTouchId: number | null = null;
+
+            const sendTouchAsPointer = (
+                element: HTMLElement,
+                event: TouchEvent,
+                touch: Touch,
+                eventType: string,
+            ) => {
+                const pointerId = touch.identifier + 2;
+
+                const pointerEvent = {
+                  pointerId,
+                  pointerType: "touch",
+                  isPrimary: activeTouches.get(pointerId) === true,
+                  button: 0,
+                  buttons:
+                    eventType === "pointerup" || eventType === "pointercancel"
+                      ? 0
+                      : 1,
+                  clientX: touch.clientX,
+                  clientY: touch.clientY,
+                  pressure:
+                    eventType === "pointerup" || eventType === "pointercancel"
+                      ? 0
+                      : typeof touch.force === "number" && touch.force > 0
+                        ? touch.force
+                        : 0.5,
+                  tiltX: 0,
+                  tiltY: 0,
+                  width: touch.radiusX ? touch.radiusX * 2 : 1,
+                  height: touch.radiusY ? touch.radiusY * 2 : 1,
+                  twist: 0,
+                  timeStamp: event.timeStamp,
+                  target: element,
+                } as unknown as PointerEvent;
+
+                this.onEvent(pointerEvent, eventType);
+
+                if (element === canvas && painter && painter.initialized) {
+                    if (eventType === "pointerdown") {
+                    painter.onstart(pointerEvent);
+                    } else if (eventType === "pointermove") {
+                    painter.onmove(pointerEvent);
+                    } else {
+                    painter.onstop(pointerEvent);
+                    }
+                }
+            };
+
+            const attachTouchEvents = (element: HTMLElement) => {
+            element.ontouchstart = (event: TouchEvent) => {
+                event.preventDefault();
+                event.stopPropagation();
+
+                for (let i = 0; i < event.changedTouches.length; i++) {
+                const touch = event.changedTouches[i];
+                const pointerId = touch.identifier + 2;
+
+                if (primaryTouchId === null && activeTouches.size === 0) {
+                    primaryTouchId = pointerId;
+                }
+
+                activeTouches.set(pointerId, pointerId === primaryTouchId);
+
+                sendTouchAsPointer(element, event, touch, "pointerdown");
+                }
+            };
+
+            element.ontouchmove = (event: TouchEvent) => {
+                event.preventDefault();
+                event.stopPropagation();
+
+                for (let i = 0; i < event.changedTouches.length; i++) {
+                sendTouchAsPointer(
+                    element,
+                    event,
+                    event.changedTouches[i],
+                    "pointermove",
+                );
+                }
+            };
+
+            const endTouch = (event: TouchEvent, eventType: string) => {
+                event.preventDefault();
+                event.stopPropagation();
+
+                for (let i = 0; i < event.changedTouches.length; i++) {
+                const touch = event.changedTouches[i];
+                const pointerId = touch.identifier + 2;
+
+                sendTouchAsPointer(element, event, touch, eventType);
+
+                activeTouches.delete(pointerId);
+
+                if (activeTouches.size === 0) {
+                    primaryTouchId = null;
+                }
+            }
+            };
+
+            element.ontouchend = (event: TouchEvent) => {
+                endTouch(event, "pointerup");
+            };
+
+            element.ontouchcancel = (event: TouchEvent) => {
+                endTouch(event, "pointercancel");
+            };
+        };
+
+        attachTouchEvents(video as HTMLElement);
+        attachTouchEvents(canvas as HTMLElement);
+        }
         // This is a workaround for the following Safari/WebKit bug:
         // https://bugs.webkit.org/show_bug.cgi?id=217430
         // I have no idea why this works but it does.
-        video.ontouchmove = (e) => e.preventDefault();
-        canvas.ontouchmove = (e) => e.preventDefault();
+        if ("PointerEvent" in window) {
+            video.ontouchmove = (e) => e.preventDefault();
+            canvas.ontouchmove = (e) => e.preventDefault();
+        }
 
         for (let elem of [video, canvas]) {
             elem.onwheel = (e) => {
