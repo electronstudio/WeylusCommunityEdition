@@ -617,8 +617,7 @@ void open_video(VideoContext* ctx, Error* err)
 #endif
 
 #ifdef HAS_NVENC
-	if (ctx->try_nvenc && !using_hw &&
-		av_hwdevice_ctx_create(&ctx->hw_device_ctx, AV_HWDEVICE_TYPE_CUDA, NULL, NULL, 0) == 0)
+	if (ctx->try_nvenc && !using_hw)
 	{
 		codec = avcodec_find_encoder_by_name("h264_nvenc");
 		if (codec)
@@ -633,13 +632,9 @@ void open_video(VideoContext* ctx, Error* err)
 					ctx->height_in,
 					ctx->width_out,
 					ctx->height_out,
-					AV_PIX_FMT_CUDA,
-#ifdef HAS_LIBNPP
 					AV_PIX_FMT_NV12,
-#else
-					AV_PIX_FMT_BGR0,
-#endif
-					ctx->hw_device_ctx,
+					AV_PIX_FMT_NV12,
+					NULL,
 					&err);
 				if (err.code)
 				{
@@ -648,8 +643,7 @@ void open_video(VideoContext* ctx, Error* err)
 				}
 				else
 				{
-					ctx->c->pix_fmt = AV_PIX_FMT_CUDA;
-					ctx->c->hw_frames_ctx = ctx->scalers.hw_frames_ctx;
+					ctx->c->pix_fmt = AV_PIX_FMT_NV12;
 					av_opt_set(ctx->c->priv_data, "preset", "p1", 0);
 					av_opt_set(ctx->c->priv_data, "zerolatency", "1", 0);
 					av_opt_set(ctx->c->priv_data, "tune", "ull", 0);
